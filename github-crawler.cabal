@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 23923871f995227a44999d2c6e028c7999acdb2a05aa036d91d06293ab9d7a8a
+-- hash: 03f999ad73c36f0e4624ae50a007f0879cc5133d408b265b5097e904519af2b1
 
 name:           github-crawler
 version:        0.1.0.0
@@ -28,7 +28,6 @@ source-repository head
 library
   exposed-modules:
       Github.Crawler
-      Lib
   other-modules:
       Paths_github_crawler
   hs-source-dirs:

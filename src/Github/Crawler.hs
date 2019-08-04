@@ -1,5 +1,6 @@
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE NamedFieldPuns #-}
+{-# LANGUAGE DuplicateRecordFields #-}
 
 module Github.Crawler ( TimelineContent(..)
                       , crawlTimeline
@@ -14,12 +15,20 @@ import           Debug.Trace (trace)
 import           Network.HTTP.Client.TLS (newTlsManager)
 type Username = String
 
-data TimelineContent =
-  TimelineContent
-    { link :: Text
-    , action :: Text
+data TimelinePullRequestContent =
+  TimelinePullRequestContent
+    { repository :: Text
     } deriving (Eq, Ord, Show)
 
+data TimelineIssueContent =
+  TimelineIssueContent
+    { repository :: Text
+    } deriving (Eq, Ord, Show)
+
+data TimelineContent
+  = TimelineContentIssue TimelineIssueContent
+  | TimelineContentPullRequest TimelinePullRequestContent
+  deriving (Eq, Ord, Show)
 
 getConfig :: IO (Config Text)
 getConfig = do
@@ -49,6 +58,41 @@ crawlTimelineURL url cfg = do
     Nothing -> return $ Left $ T.pack $ "Could not scrape at URL " ++ url
 
 
+scrapeRepository :: Scraper Text Text
+scrapeRepository = attr "data-hovercard-url" $
+    "span" @:
+    [ hasClass "css-truncate"
+    , "data-hovercard-type" @= "repository"
+    ]
+
+
+scrapeTimelinePullRequestContent :: Scraper Text TimelinePullRequestContent
+scrapeTimelinePullRequestContent = do
+  repository <- scrapeRepository
+  return $ TimelinePullRequestContent
+    { repository = repository
+    }
+
+
+scrapeTimelineIssueContent :: Scraper Text TimelineIssueContent
+scrapeTimelineIssueContent = do
+  repository <- scrapeRepository
+  return TimelineIssueContent
+    { repository = repository
+    }
+
+
+scrapePullRequestRollupWrapper :: Scraper Text [TimelineContent]
+scrapePullRequestRollupWrapper = do
+  matches $ "svg" @: [hasClass "octicon-git-pull-request"]
+  chroots ("div" @: [hasClass "profile-rollup-summarized"]) $
+    TimelineContentPullRequest <$> scrapeTimelinePullRequestContent
+
+
+scrapeTimelineWrapper :: Scraper Text [TimelineContent]
+scrapeTimelineWrapper = scrapePullRequestRollupWrapper
+
+
 scrapeTimeLineContent :: Scraper Text ([TimelineContent], Maybe URL)
 scrapeTimeLineContent = do
   let doesButtonExist = do
@@ -60,14 +104,8 @@ scrapeTimeLineContent = do
           (Just . T.unpack) <$> (attr "action" ("form"  @: [hasClass "ajax-pagination-form"]))
         else
           return Nothing
-  let getContentEntry = do
-        link <- attr "data-hovercard-type" $ "span" @: [hasClass "d-inline-block"]
-        action <- attr "data-hovercard-type" $ "span" @: [hasClass "d-inline-block"]
-        return $ TimelineContent { link = link
-                                 , action = action
-                                 }
   url <- fmap ("https://github.com" ++) <$> getAction
-  contents <- chroots ("div" @: [hasClass "profile-rollup-summarized"]) getContentEntry
+  contents <- concat <$> chroots ("div" @: [hasClass "profile-rollup-wrapper"]) scrapeTimelineWrapper
   return (contents, url)
 
 
