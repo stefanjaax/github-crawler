@@ -1,0 +1,97 @@
+cabal-version: 1.12
+
+-- This file has been generated from package.yaml by hpack version 0.31.2.
+--
+-- see: https://github.com/sol/hpack
+--
+-- hash: 23923871f995227a44999d2c6e028c7999acdb2a05aa036d91d06293ab9d7a8a
+
+name:           github-crawler
+version:        0.1.0.0
+description:    Please see the README on GitHub at <https://github.com/githubuser/github-crawler#readme>
+homepage:       https://github.com/stefanjaax/github-crawler#readme
+bug-reports:    https://github.com/stefanjaax/github-crawler/issues
+author:         Stefan Jaax
+maintainer:     example@example.com
+copyright:      2019 Stefan Jaax
+license:        MIT
+license-file:   LICENSE
+build-type:     Simple
+extra-source-files:
+    README.md
+    ChangeLog.md
+
+source-repository head
+  type: git
+  location: https://github.com/stefanjaax/github-crawler
+
+library
+  exposed-modules:
+      Github.Crawler
+      Lib
+  other-modules:
+      Paths_github_crawler
+  hs-source-dirs:
+      src
+  build-depends:
+      base >=4.7 && <5
+    , github >=0.22
+    , http-client-tls
+    , scalpel >=0.6.0
+    , tagsoup >=0.14.8
+    , text
+  default-language: Haskell2010
+
+executable github-crawler-exe
+  main-is: Main.hs
+  other-modules:
+      Paths_github_crawler
+  hs-source-dirs:
+      app
+  ghc-options: -threaded -rtsopts -with-rtsopts=-N
+  build-depends:
+      base >=4.7 && <5
+    , github >=0.22
+    , github-crawler
+    , http-client-tls
+    , scalpel >=0.6.0
+    , tagsoup >=0.14.8
+    , text
+  default-language: Haskell2010
+
+test-suite github-crawler-test
+  type: exitcode-stdio-1.0
+  main-is: Spec.hs
+  other-modules:
+      Paths_github_crawler
+  hs-source-dirs:
+      test
+  ghc-options: -threaded -rtsopts -with-rtsopts=-N
+  build-depends:
+      base >=4.7 && <5
+    , github >=0.22
+    , github-crawler
+    , http-client-tls
+    , scalpel >=0.6.0
+    , tagsoup >=0.14.8
+    , text
+  default-language: Haskell2010
+
+benchmark github-crawler-benchmark
+  type: exitcode-stdio-1.0
+  main-is: Main.hs
+  other-modules:
+      Paths_github_crawler
+  hs-source-dirs:
+      bench
+  ghc-options: -threaded -rtsopts -with-rtsopts=-N
+  build-depends:
+      base >=4.7 && <5
+    , criterion
+    , github >=0.22
+    , github-crawler
+    , http-client-tls
+    , scalpel >=0.6.0
+    , tagsoup >=0.14.8
+    , text
+  default-language: Haskell2010

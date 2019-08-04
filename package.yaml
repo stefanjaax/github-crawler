@@ -1,0 +1,65 @@
+name:                github-crawler
+version:             0.1.0.0
+github:              "stefanjaax/github-crawler"
+license:             MIT
+author:              "Stefan Jaax"
+maintainer:          "example@example.com"
+copyright:           "2019 Stefan Jaax"
+
+extra-source-files:
+- README.md
+- ChangeLog.md
+
+# Metadata used when publishing your package
+# synopsis:            Short description of your package
+# category:            Web
+
+# To avoid duplicated efforts in documentation and dealing with the
+# complications of embedding Haddock markup inside cabal files, it is
+# common to point users to the README.md file.
+description:         Please see the README on GitHub at <https://github.com/githubuser/github-crawler#readme>
+
+dependencies:
+- base >= 4.7 && < 5
+- github >= 0.22
+- http-client-tls
+- scalpel >= 0.6.0
+- tagsoup >= 0.14.8
+- text
+
+library:
+  source-dirs: src
+
+executables:
+  github-crawler-exe:
+    main:                Main.hs
+    source-dirs:         app
+    ghc-options:
+    - -threaded
+    - -rtsopts
+    - -with-rtsopts=-N
+    dependencies:
+    - github-crawler
+
+tests:
+  github-crawler-test:
+    main:                Spec.hs
+    source-dirs:         test
+    ghc-options:
+    - -threaded
+    - -rtsopts
+    - -with-rtsopts=-N
+    dependencies:
+    - github-crawler
+
+benchmarks:
+  github-crawler-benchmark:
+    main:                Main.hs
+    source-dirs:         bench
+    ghc-options:
+    - -threaded
+    - -rtsopts
+    - -with-rtsopts=-N
+    dependencies:
+    - github-crawler
+    - criterion
